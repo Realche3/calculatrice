@@ -12,13 +12,15 @@ namespace calculatrice
     {
         #region Declaration
 
-        Button Plus, Minus, Divide, Multiply, Equal, Enter;
+        Button Plus, Minus, Divide, Multiply, Equal, Dot, Clear;
         Label resultLbl, bufferLbl;
 
         Button[] keypad;
 
         double buffer = 0.0;
         double result = 0.0;
+
+        #region Methodes Public
 
         public double Buffer
         {
@@ -44,28 +46,34 @@ namespace calculatrice
                 resultLbl.Text = result.ToString();
             }
         }
+
         #endregion
-        
+
+        #endregion
+
         #region Init
+
 
         private void InitComponent()
         {
             resultLbl = new Label();
             bufferLbl = new Label();
-            Plus = new Button() { Text = "Plus" };
-            Minus = new Button() { Text = "Minus" };
-            Divide = new Button() { Text = "Divide" };
-            Multiply = new Button() { Text = "Multiply" };
-            Enter = new Button() { Text = "Enter" };
+            Plus = new Button() { Text = "+" };
+            Minus = new Button() { Text = "-" };
+            Divide = new Button() { Text = "/" };
+            Multiply = new Button() { Text = "*" };
+            Clear = new Button() { Text = "C" };
+            Equal = new Button() { Text = "=" };
+            Dot = new Button() { Text = "." };
 
-            resultLbl.VerticalTextAlignment = TextAlignment.Center;
-            resultLbl.HorizontalTextAlignment = TextAlignment.Center;
+            resultLbl.VerticalTextAlignment = TextAlignment.End;
+            resultLbl.HorizontalTextAlignment = TextAlignment.End;
             resultLbl.HorizontalOptions = new LayoutOptions(LayoutAlignment.Fill, true);
             resultLbl.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill, true);
             resultLbl.FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label));
 
-            bufferLbl.VerticalTextAlignment = TextAlignment.Center;
-            bufferLbl.HorizontalTextAlignment = TextAlignment.Center;
+            bufferLbl.VerticalTextAlignment = TextAlignment.End;
+            bufferLbl.HorizontalTextAlignment = TextAlignment.End;
             bufferLbl.HorizontalOptions = new LayoutOptions(LayoutAlignment.Fill, true);
             bufferLbl.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill, true);
 
@@ -73,7 +81,7 @@ namespace calculatrice
             Minus.Pressed += Minus_Pressed;
             Divide.Pressed += Divide_Pressed;
             Multiply.Pressed += Multiply_Pressed;
-            Enter.Pressed += Enter_Pressed;
+            Clear.Pressed += Clear_Pressed;
 
             //KeyPad Buttons
             keypad = new Button[10];
@@ -86,35 +94,49 @@ namespace calculatrice
                 button.Pressed += (o, e) => { KeypadButton_Pressed(i); };
             }
 
+            #region Creation et insertion des composante dans le Grid
             // grid
             int[] index_remap = new int[] { 0, 3, 2, 1, 6, 5, 4, 9, 8, 7 };
             var grid = new rMultiplatform.AutoGrid();
-
-            grid.DefineGrid(3, 6);
+            //var Headergrid = new rMultiplatform.AutoGrid();
+            //Headergrid.DefineGrid(4, 6);
+            grid.DefineGrid(4, 6);
 
             grid.AutoAdd(bufferLbl);
             grid.AutoAdd(resultLbl,2);
-
-            for (var index = keypad.Count()-1; index >=0; --index)
-            {                
-                ref var button = ref keypad[index_remap[index]];
-                if (index != 0)
-                    grid.AutoAdd(button);
-                else
-                    grid.AutoAdd(button, 2);
-            }
-
-            // setUp the buttons
+            grid.AutoAdd(Clear);
+            grid.AutoAdd(keypad[1]);
+            grid.AutoAdd(keypad[2]);
+            grid.AutoAdd(keypad[3]);
             grid.AutoAdd(Plus);
+            grid.AutoAdd(keypad[4]);
+            grid.AutoAdd(keypad[5]);
+            grid.AutoAdd(keypad[6]);
             grid.AutoAdd(Minus);
-            grid.AutoAdd(Divide);
+            grid.AutoAdd(keypad[7]);
+            grid.AutoAdd(keypad[8]);
+            grid.AutoAdd(keypad[9]);
             grid.AutoAdd(Multiply);
-           // grid.AutoAdd(Enter);
+            grid.AutoAdd(Dot);
+            grid.AutoAdd(keypad[0]);
+            grid.AutoAdd(Equal);
+            grid.AutoAdd(Divide);
+
+            //for (var index = keypad.Count()-1; index >=0; --index)
+            //{                
+            //    ref var button = ref keypad[index_remap[index]];
+            //    if (index != 0)
+            //        grid.AutoAdd(button);
+            //    else
+            //        grid.AutoAdd(button, 2);
+            //}
+
             //afficher la grid
 
             Content = grid;
-
+            #endregion
         }
+
 
 
         public MainPage()
@@ -127,17 +149,17 @@ namespace calculatrice
 
         #region Operation Button
 
+        private void Clear_Pressed(object sender, EventArgs e)
+        {
+            Buffer = 0.0;
+            Result = 0.0;
+        }
         private void KeypadButton_Pressed(int index)
         {
             Buffer *= 10.0;
             Buffer += (double)index;
 
            // double value = index;
-        }
-
-        private void Enter_Pressed(object sender, EventArgs e)
-        {
-            Result = buffer;
         }
 
         private void Multiply_Pressed(object sender, EventArgs e)
